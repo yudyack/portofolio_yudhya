@@ -1,0 +1,20 @@
+services:
+  # The portfolio app — runs the Next.js standalone server on the internal network.
+  # No host ports are published; only cloudflared reaches it, over the compose network.
+  web:
+    build: .
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  # Cloudflare named tunnel. Token comes from the Zero Trust dashboard (see DEPLOY.md).
+  # The public hostname -> service mapping (yudhyapw.com -> http://web:3000) is set
+  # in that same dashboard, so no config file is needed here.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      - web

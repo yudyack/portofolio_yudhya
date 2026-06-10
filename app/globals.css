@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Light theme — design/design-spec.md §2 */
+  --background: #f4f2ec; /* paper */
+  --foreground: #2b302b; /* ink */
+  --muted: #6b7268; /* grey-moss */
+  --line: #dcdfd6; /* hairline */
+  --accent: #3f5a44; /* forest */
+  --accent-soft: rgba(63, 90, 68, 0.08);
+  --sage: #a9bfa9;
+  --sage-hover: #9bb49b; /* sage nudged deeper for panel hover */
+  --sage-deep: #8aa98c;
+  --on-sage: #4a554b; /* secondary text on sage — never grey-moss on sage */
+  --card: #fbfaf6; /* cream */
+  --panel: #e9e5da; /* neutral secondary panel (de-greened per handoff decision #8) */
+  --panel-dark: #2b302b; /* charcoal experience panel */
+  --panel-dark-hover: #3a403a; /* charcoal nudged lighter for panel hover */
+  --on-dark: #fbfaf6;
+  --blob: #c9ccc2;
+
+  /* Exactly two font sizes site-wide — spec §4 */
+  --size-l: 22px;
+  --size-s: 15px;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --size-l: 20px;
+    --size-s: 14px;
+  }
+}
+
+.dark {
+  /* Dark theme — design/design-spec.md §3 (deferred in handoff; default stays light) */
+  --background: #171a17; /* night */
+  --foreground: #dde0da;
+  --muted: #9aa399;
+  --line: #2e332e;
+  --accent: #8aa98c; /* sage-bright */
+  --accent-soft: rgba(138, 169, 140, 0.1);
+  --sage: #2e4233; /* panel-accent */
+  --sage-hover: #37503d;
+  --sage-deep: #8aa98c;
+  --on-sage: #aebcae;
+  --card: #222722; /* panel */
+  --panel: #222722;
+  --panel-dark: #222722;
+  --panel-dark-hover: #2a302a;
+  --on-dark: #dde0da;
+  --blob: #1e221e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-sage: var(--sage);
+  --color-sage-hover: var(--sage-hover);
+  --color-sage-deep: var(--sage-deep);
+  --color-on-sage: var(--on-sage);
+  --color-card: var(--card);
+  --color-panel: var(--panel);
+  --color-panel-dark: var(--panel-dark);
+  --color-panel-dark-hover: var(--panel-dark-hover);
+  --color-on-dark: var(--on-dark);
+  --color-blob: var(--blob);
+  --font-sans: var(--font-nunito-sans);
+  --font-mono: var(--font-jetbrains-mono);
+  --text-l: var(--size-l);
+  --text-l--line-height: 1.4;
+  --text-s: var(--size-s);
+  --text-s--line-height: 1.7;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), "Source Sans 3", system-ui, sans-serif;
+  font-size: var(--size-s);
+  line-height: 1.7;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--background);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- Fade-and-rise on load: 12px, 500ms ease-out, staggered via inline delay --- */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise-in 0.5s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* --- Post body typography --- */
+
+.prose {
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.prose h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 2.25rem 0 0.75rem;
+}
+
+.prose h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 1.75rem 0 0.5rem;
+}
+
+.prose p {
+  margin: 1rem 0;
+}
+
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose ul,
+.prose ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li {
+  margin: 0.35rem 0;
+}
+
+.prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1rem;
+  color: var(--muted);
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
+.prose code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875em;
+  background: var(--accent-soft);
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+}
+
+.prose pre {
+  background: var(--accent-soft);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 2rem 0;
+}
