@@ -55,7 +55,7 @@ export default function Home() {
             </a>
           </div>
         </div>
-        <div className="relative h-[140px] w-[140px] shrink-0 self-center lg:h-[200px] lg:w-[200px]">
+        <div className="relative h-[200px] w-[200px] shrink-0 self-center">
           <RingMotif className="absolute inset-0 h-full w-full" />
           <Image
             src="/cat.jpg"
