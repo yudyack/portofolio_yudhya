@@ -1,0 +1,21 @@
+services:
+  # Production: the VPS runs a pre-built image pulled from Docker Hub instead of
+  # building on the box. The image name comes from WEB_IMAGE in .env, e.g.
+  #   WEB_IMAGE=yourdockerhubuser/portofolio-web:latest
+  # Build and push it from your laptop (see MIGRATION.md), then on the VPS run:
+  #   docker compose -f docker-compose.prod.yml pull
+  #   docker compose -f docker-compose.prod.yml up -d
+  web:
+    image: ${WEB_IMAGE}
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      - web
