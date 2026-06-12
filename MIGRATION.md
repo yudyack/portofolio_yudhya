@@ -102,9 +102,10 @@ Cloudflare keeps pointing at the tunnel; the tunnel just connects from the VPS i
 
 ## Option B — build locally, pull on the VPS (Docker Hub)
 
-This keeps the heavy build on your laptop so the VPS never compiles. It uses
-`docker-compose.prod.yml` (the `web` service has `image: ${WEB_IMAGE}` instead of
-`build: .`), so the regular `docker-compose.yml` stays the local build-and-run file.
+This keeps the heavy build on your laptop so the VPS never compiles. The regular
+`docker-compose.yml` names the built image (`image: ${WEB_IMAGE:-portofolio-web:local}`
+alongside `build: .`), so you build and push it with compose. `docker-compose.prod.yml`
+has only `image: ${WEB_IMAGE}` (no build), so the VPS just pulls and runs.
 
 ### One-time
 1. Create a Docker Hub account (free) and note your username.
@@ -115,14 +116,15 @@ This keeps the heavy build on your laptop so the VPS never compiles. It uses
    the single private slot for the company-profile if you prefer.
 
 ### On your laptop — build and push
+Set `WEB_IMAGE` in `.env` first (see `.env.example`), e.g.
+`WEB_IMAGE=<dockerhubuser>/portofolio-web:latest`. Then build and push with compose:
 ```sh
 cd C:\Users\yudhy\sources\portofolio_yudhya
 docker login -u <dockerhubuser>                       # paste the access token
-docker build -t <dockerhubuser>/portofolio-web:latest .
-docker push <dockerhubuser>/portofolio-web:latest
+docker compose build web                              # tags the image as $WEB_IMAGE
+docker compose push web                               # pushes it to Docker Hub
 ```
-company-profile is the same with its own image name, e.g.
-`<dockerhubuser>/glider-web:latest` (its `NEXT_PUBLIC_EMAILJS_*` values are baked in here).
+Pushing `web` by name avoids touching the pulled `cloudflared` image.
 
 ### On the VPS — pull and run
 Set both values in `.env`:
@@ -141,7 +143,7 @@ docker compose -f docker-compose.prod.yml logs -f cloudflared   # expect "Regist
 ### Future updates
 ```sh
 # laptop
-docker build -t <dockerhubuser>/portofolio-web:latest . && docker push <dockerhubuser>/portofolio-web:latest
+docker compose build web && docker compose push web
 # vps
 docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d
 ```

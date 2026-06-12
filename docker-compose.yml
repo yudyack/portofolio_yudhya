@@ -2,6 +2,7 @@ services:
   # The portfolio app — runs the Next.js standalone server on the internal network.
   # No host ports are published; only cloudflared reaches it, over the compose network.
   web:
+    image: ${WEB_IMAGE:-portofolio-web:local}
     build: .
     restart: unless-stopped
     expose:
