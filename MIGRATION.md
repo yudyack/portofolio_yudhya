@@ -156,3 +156,57 @@ docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compo
   matching service URL in the Cloudflare tunnel's public-hostname config.
 - **Pull rate limit is a non-issue:** Docker Hub's limit is per 6 hours, and a deploy is
   ~2 pulls. Logged in you get 200/6h.
+
+## Option C — push to deploy (GitHub Actions)
+
+`git push` to `main` is the whole deploy. GitHub's runner builds the web image (so your
+laptop is out of the loop and the 2 GB build constraint disappears entirely), pushes it to
+Docker Hub, then SSHes into the VPS to `pull` + `up -d`. The workflow lives at
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+
+This sits on top of Option B: the VPS keeps the same `docker-compose.prod.yml` + `.env`
+(`WEB_IMAGE=<dockerhubuser>/portofolio-web:latest`, `TUNNEL_TOKEN=eyJ...`). The action just
+automates the two "future update" commands.
+
+### One-time — add repo secrets
+GitHub → repo → **Settings → Secrets and variables → Actions → New repository secret**.
+Add each of:
+
+| Secret | Value |
+| --- | --- |
+| `DOCKERHUB_USERNAME` | Your Docker Hub username (the workflow builds `<username>/portofolio-web`). |
+| `DOCKERHUB_TOKEN` | A Docker Hub access token (Account Settings → Security → New Access Token), **Read & Write**. |
+| `VPS_HOST` | The VPS IP or hostname. |
+| `VPS_USER` | SSH user, e.g. `root`. |
+| `VPS_SSH_KEY` | A **private** SSH key whose public half is in the VPS's `~/.ssh/authorized_keys`. Paste the whole key including the BEGIN/END lines. |
+| `VPS_PATH` | Absolute path to the repo checkout on the VPS, e.g. `/root/portofolio_yudhya`. |
+
+Generate a dedicated deploy key so you are not pasting your personal key:
+```sh
+ssh-keygen -t ed25519 -C "gh-actions-deploy" -f deploy_key -N ""
+ssh-copy-id -i deploy_key.pub <user>@<vps-ip>   # or append deploy_key.pub to authorized_keys
+# put the contents of deploy_key (the private file) into the VPS_SSH_KEY secret, then delete it locally
+```
+
+### Each deploy
+```sh
+git push            # that's it — watch progress under the repo's Actions tab
+```
+The first run does a full image build (a few minutes); later runs reuse the GitHub layer
+cache and finish in seconds when only app code changed. The image is tagged both `:latest`
+(what the VPS pulls) and `:<commit-sha>` (so you can roll back to a specific build).
+
+### Roll back
+On the VPS, point `WEB_IMAGE` at a known-good SHA tag and re-up:
+```sh
+WEB_IMAGE=<dockerhubuser>/portofolio-web:<old-sha> \
+  docker compose -f docker-compose.prod.yml up -d
+```
+
+### Notes
+- **Concurrency guard:** the workflow uses a `deploy` concurrency group, so a newer push
+  cancels an in-flight deploy instead of two racing to `up -d`.
+- **Image build only — cloudflared is untouched.** The action builds and ships the `web`
+  image; the VPS keeps pulling `cloudflare/cloudflared:latest` itself, exactly as before.
+- **Company-profile is separate.** This workflow deploys only this portfolio. Mirror it in
+  the `glider-stack` repo (its own secrets + `VPS_PATH`) if you want the same for that site.

@@ -2,7 +2,7 @@
 title: "Structured logging: how I actually think about it"
 date: "2026-06-10"
 summary: "Signal vs. noise, cost vs. value: a working mental model for logs that earn their keep."
-draft: true
+draft: false
 ---
 
 > **DRAFT SKELETON**: this outline is a starting point. The substance has to come from you: real incidents, real trade-offs, real numbers (anonymized).

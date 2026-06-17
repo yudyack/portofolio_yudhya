@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-const postsDir = path.join(process.cwd(), "content", "writing");
+const postsDir = path.join(process.cwd(), "content", "blog");
 
 export type Post = {
   slug: string;

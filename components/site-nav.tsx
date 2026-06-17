@@ -19,8 +19,8 @@ export function SiteNav() {
         <Link href="/projects" className={navLink}>
           projects
         </Link>
-        <Link href="/writing" className={navLink}>
-          writing
+        <Link href="/blog" className={navLink}>
+          blog
         </Link>
         <Link href="/cv" className={navLink}>
           cv

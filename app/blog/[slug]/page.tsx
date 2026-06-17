@@ -22,10 +22,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   return (
     <article className="rise mx-auto max-w-[720px] pt-6">
       <Link
-        href="/writing"
+        href="/blog"
         className="text-s text-muted transition-colors duration-200 hover:text-accent"
       >
-        ← writing
+        ← blog
       </Link>
       <header className="mt-6 flex flex-col gap-2">
         <h1 className="text-l font-bold text-foreground">

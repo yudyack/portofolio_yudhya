@@ -115,14 +115,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Writing — full-width row of cream cards */}
+      {/* Blog — full-width row of cream cards */}
       <section className="rise lg:col-span-4" style={{ animationDelay: "240ms" }}>
-        <p className={`${label} mb-4 text-muted`}>Writing</p>
+        <p className={`${label} mb-4 text-muted`}>Blog</p>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {posts.map((post) => (
             <Link
               key={post.slug}
-              href={`/writing/${post.slug}`}
+              href={`/blog/${post.slug}`}
               className="group flex flex-col rounded-2xl bg-card p-8 transition-colors duration-200 hover:bg-accent-soft"
             >
               <span className="font-semibold text-foreground transition-colors duration-200 group-hover:text-accent">
@@ -139,10 +139,10 @@ export default function Home() {
           ))}
         </div>
         <Link
-          href="/writing"
+          href="/blog"
           className="mt-4 inline-block font-bold text-foreground transition-colors duration-200 hover:text-accent"
         >
-          all writing →
+          all posts →
         </Link>
       </section>
     </div>
