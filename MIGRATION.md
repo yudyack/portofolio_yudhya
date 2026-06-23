@@ -188,6 +188,22 @@ ssh-copy-id -i deploy_key.pub <user>@<vps-ip>   # or append deploy_key.pub to au
 # put the contents of deploy_key (the private file) into the VPS_SSH_KEY secret, then delete it locally
 ```
 
+You can also set them from the CLI (each prompts for the value; the SSH key reads a file):
+```sh
+gh secret set DOCKERHUB_USERNAME --repo yudyack/portofolio_yudhya
+gh secret set DOCKERHUB_TOKEN    --repo yudyack/portofolio_yudhya
+gh secret set VPS_HOST           --repo yudyack/portofolio_yudhya
+gh secret set VPS_USER           --repo yudyack/portofolio_yudhya
+gh secret set VPS_PATH           --repo yudyack/portofolio_yudhya
+gh secret set VPS_SSH_KEY        --repo yudyack/portofolio_yudhya < deploy_key
+```
+
+**Verify before pushing** — an empty list means the deploy will fail at the Docker Hub
+login step with `Username and password required`:
+```sh
+gh secret list --repo yudyack/portofolio_yudhya   # should list all six
+```
+
 ### Each deploy
 ```sh
 git push            # that's it — watch progress under the repo's Actions tab
